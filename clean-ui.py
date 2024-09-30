@@ -49,10 +49,6 @@ def describe_image(image, user_prompt, temperature, top_k, top_p, max_tokens, hi
         # Preprocess the image and prompt
         inputs = processor(image, prompt, return_tensors="pt").to(model.device)
 
-        # Ensure the prompt is not repeated in the output
-        if cleaned_output.startswith(user_prompt):
-            cleaned_output = cleaned_output[len(user_prompt):].strip()
-        
         # Generate output with model
         output = model.generate(
             **inputs,
@@ -67,6 +63,10 @@ def describe_image(image, user_prompt, temperature, top_k, top_p, max_tokens, hi
         
         # Clean up the output to remove system tokens
         cleaned_output = raw_output.replace("<|image|><|begin_of_text|>", "").strip().replace(" Answer:", "")
+
+        # Ensure the prompt is not repeated in the output
+        if cleaned_output.startswith(user_prompt):
+            cleaned_output = cleaned_output[len(user_prompt):].strip()
 
     elif model_choice == "2":  # Molmo Model
         # Prepare inputs for Molmo model
